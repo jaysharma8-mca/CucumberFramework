@@ -1,75 +1,72 @@
 package com.test.step_definitions;
 
+import java.net.MalformedURLException;
+import java.util.Collections;
 
-
-import Base.BaseUtil;
-
-
-//import cucumber.api.PickleStepTestStep;
-//import cucumber.api.TestCase;
-//import gherkin.pickles.PickleStep;
-//import io.cucumber.core.api.Scenario;
-
-
-import io.cucumber.java.*;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
+import cucumber.api.Scenario;
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
 
-/**
- * Created by Karthik on 31/01/2019.
- */
-
-public class Hook extends BaseUtil{
-
-
-    private BaseUtil base;
-
-    public Hook(BaseUtil base) {
-        this.base = base;
-    }
-
+public class Hooks{
+    
+	public static WebDriver driver;
+	
     @Before
-    public void InitializeTest(Scenario scenario) {
+    /**
+     * Delete all cookies at the start of each scenario to avoid
+     * shared state between tests
+     */
 
-
-        base.scenarioDef = base.features.createNode(scenario.getName());
-
-        System.out.println("Opening the browser : Firefox");
-
-        /*System.setProperty("webdriver.firefox.marionette", "D:\\Libs\\geckodriver.exe");
-        base.Driver = new FirefoxDriver();*/
-
-
-        //Chrome driver
-//        System.setProperty("webdriver.chrome.driver", "/Users/karthikkk/ChromeDriver/chromedriver");
-//        base.Driver = new ChromeDriver();
-
-        System.setProperty("webdriver.chrome.driver", "C:\\Libs\\chromedriver.exe");
-        base.Driver = new ChromeDriver();
+    public void openBrowser() throws MalformedURLException {
+    	
+    	//certification for chrome
+    	System.out.println("Called openBrowser");
+    	
+       	DesiredCapabilities capability = DesiredCapabilities.chrome();
+		capability.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+    	System.setProperty("webdriver.chrome.driver", "C:\\Libs\\chromedriver.exe");
+    	
+    	
+    	/* Code added externally by pallavi */
+    	ChromeOptions options = new ChromeOptions(); 
+    	options.addArguments("disable-infobars"); 
+    	driver = new ChromeDriver(options);
+    	/********************************/
+    	driver.manage().deleteAllCookies();
+    	driver.manage().window().maximize();
+    	
     }
 
-
+     
     @After
-    public void TearDownTest(Scenario scenario) {
-        if (scenario.isFailed()) {
-            //Take screenshot logic goes here
-            System.out.println(scenario.getName());
+    /**
+     * Embed a screenshot in test report if test is marked as failed
+     */
+    public void embedScreenshot(Scenario scenario) {
+       
+        if(scenario.isFailed()) {
+        try {
+        	 scenario.write("Current Page URL is " + driver.getCurrentUrl());
+//            byte[] screenshot = getScreenshotAs(OutputType.BYTES);
+            byte[] screenshot = ((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES);
+            scenario.embed(screenshot, "image/png");
+        } catch (WebDriverException somePlatformsDontSupportScreenshots) {
+            System.err.println(somePlatformsDontSupportScreenshots.getMessage());
         }
-        System.out.println("Closing the browser : MOCK");
-        base.Driver.quit();
+        
+        }
+        driver.quit();
+        
     }
-
-    @BeforeStep
-    public void BeforeEveryStep(Scenario scenario) {
-        System.out.println("Before every step " + scenario.getId());
-
-        //((PickleStep)((PickleStepTestStep)
-    }
-
-    @AfterStep
-    public void AfterEveryStep(Scenario scenario) throws NoSuchFieldException, IllegalAccessException {
-        //System.out.println("Before every step " + stepTestStep.getId());
-    }
-
+    
 }
