@@ -17,9 +17,15 @@ import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 
-public class Hooks{
+public class Hooks extends BaseUtil{
     
 	public static WebDriver driver;
+	
+	private BaseUtil base;
+
+    public Hook(BaseUtil base) {
+        this.base = base;
+    }
 	
     @Before
     /**
@@ -30,20 +36,23 @@ public class Hooks{
     public void openBrowser() throws MalformedURLException {
     	
     	//certification for chrome
-    	System.out.println("Called openBrowser");
+    	base.scenarioDef = base.features.createNode(scenario.getName());
+
+        System.out.println("Opening the browser : Firefox");
+
+        /*System.setProperty("webdriver.firefox.marionette", "D:\\Libs\\geckodriver.exe");
+        base.Driver = new FirefoxDriver();*/
+
+
+        //Chrome driver
+//        System.setProperty("webdriver.chrome.driver", "/Users/karthikkk/ChromeDriver/chromedriver");
+//        base.Driver = new ChromeDriver();
+
+        System.setProperty("webdriver.chrome.driver", "C:\\Libs\\chromedriver.exe");
+        base.Driver = new ChromeDriver();
     	
-       	DesiredCapabilities capability = DesiredCapabilities.chrome();
-		capability.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-    	System.setProperty("webdriver.chrome.driver", "C:\\Libs\\chromedriver.exe");
     	
     	
-    	/* Code added externally by pallavi */
-    	ChromeOptions options = new ChromeOptions(); 
-    	options.addArguments("disable-infobars"); 
-    	driver = new ChromeDriver(options);
-    	/********************************/
-    	driver.manage().deleteAllCookies();
-    	driver.manage().window().maximize();
     	
     }
 
