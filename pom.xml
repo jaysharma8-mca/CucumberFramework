@@ -98,14 +98,11 @@
      <configuration>
        <source>1.7</source>
        <target>1.7</target>
+	<failOnMissingWebXml>false</failOnMissingWebXml>
+
      </configuration>
    </plugin>
-				<plugin>
-  
-    <configuration>
-        <failOnMissingWebXml>false</failOnMissingWebXml>
-    </configuration>
-</plugin>
+				
 				
 			</plugins>
 		</pluginManagement>
